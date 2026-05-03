@@ -24,7 +24,6 @@ ext {
 }
 
 dependencies {
-    // common: KafkaConfig, RedisConfig, JpaAuditConfig, BaseEntity, 공통 응답/예외 전이 제공
     implementation 'com.finlearn:common:0.0.1-SNAPSHOT'
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
