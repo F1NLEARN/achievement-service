@@ -32,7 +32,9 @@ public class UserAchievement extends BaseEntity {
     @JoinColumn(name = "achievement_id", nullable = false)
     private Achievement achievement;
 
-    // ────────────────────────── VO 스냅샷:  ─────────────────────────
+    @Column(name = "achievement_id", insertable = false, updatable = false)
+    private UUID achievementId;
+
     @Column(name = "achievement_name", nullable = false, length = 100)
     private String achievementName;
 
@@ -55,7 +57,6 @@ public class UserAchievement extends BaseEntity {
 
     @Column(name = "season_number", nullable = false)
     private Integer seasonNumber;
-    // ───────────────────────────────────────────────────────────────
 
     @Column(name = "achieved_at", nullable = false)
     private LocalDateTime achievedAt;

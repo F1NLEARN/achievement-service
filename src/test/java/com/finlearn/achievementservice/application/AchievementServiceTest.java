@@ -2,6 +2,7 @@ package com.finlearn.achievementservice.application;
 
 import com.finlearn.achievementservice.domain.Achievement;
 import com.finlearn.achievementservice.domain.repository.AchievementRepository;
+import com.finlearn.achievementservice.domain.repository.UserAchievementRepository;
 import com.finlearn.achievementservice.domain.vo.AchievementCategory;
 import com.finlearn.achievementservice.domain.vo.AchievementDifficulty;
 import com.finlearn.achievementservice.domain.vo.ConditionType;
@@ -17,7 +18,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,12 +28,16 @@ import static org.mockito.Mockito.verify;
 class AchievementServiceTest {
 
     @Mock private AchievementRepository achievementRepository;
+    @Mock private UserAchievementRepository userAchievementRepository;
 
     private AchievementService sut;
 
+    private static final UUID USER_ID = UUID.randomUUID();
+    private static final UUID SEASON_ID = UUID.randomUUID();
+
     @BeforeEach
     void setUp() {
-        sut = new AchievementService(achievementRepository);
+        sut = new AchievementService(achievementRepository, userAchievementRepository);
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -97,6 +104,59 @@ class AchievementServiceTest {
 
             assertThat(result).hasSize(1);
             assertThat(result.get(0)).isEqualTo(achievement);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 내 업적 조회
+    // ─────────────────────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("getMyAchievements")
+    class GetMyAchievements {
+
+        @Test
+        @DisplayName("seasonId 있음 → findAllByUserIdAndSeasonId() 호출")
+        void withSeasonId_callsSeasonFiltered() {
+            given(userAchievementRepository.findAllByUserIdAndSeasonId(USER_ID, SEASON_ID))
+                    .willReturn(List.of());
+
+            sut.getMyAchievements(USER_ID, SEASON_ID);
+
+            verify(userAchievementRepository).findAllByUserIdAndSeasonId(USER_ID, SEASON_ID);
+            verify(userAchievementRepository, never()).findAllByUserId(any());
+        }
+
+        @Test
+        @DisplayName("seasonId 없음 → findAllByUserId() 호출")
+        void withoutSeasonId_callsUserFiltered() {
+            given(userAchievementRepository.findAllByUserId(USER_ID)).willReturn(List.of());
+
+            sut.getMyAchievements(USER_ID, null);
+
+            verify(userAchievementRepository).findAllByUserId(USER_ID);
+            verify(userAchievementRepository, never())
+                    .findAllByUserIdAndSeasonId(any(), any());
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 시즌 내 달성 업적 조회
+    // ─────────────────────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("getMyAchievementCount")
+    class GetMyAchievementCount {
+
+        @Test
+        @DisplayName("시즌 내 달성 업적 수를 반환한다")
+        void returnsCount() {
+            given(userAchievementRepository.countByUserIdAndSeasonId(USER_ID, SEASON_ID))
+                    .willReturn(7L);
+
+            long count = sut.getMyAchievementCount(USER_ID, SEASON_ID);
+
+            assertThat(count).isEqualTo(7L);
         }
     }
 
