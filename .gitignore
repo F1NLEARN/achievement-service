@@ -35,5 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
-ssl/
-*.jks
+
+kafka.server.truststore.jks
+

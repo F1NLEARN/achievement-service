@@ -2,6 +2,7 @@ package com.finlearn.achievementservice.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.finlearn.achievementservice.application.AchievementEvaluationService;
 import com.finlearn.achievementservice.application.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,9 @@ class InternalAchievementControllerTest {
     @Mock
     private AchievementService achievementService;
 
+    @Mock
+    private AchievementEvaluationService achievementEvaluationService;
+
     private MockMvc mockMvc;
 
     private static final UUID USER_ID = UUID.randomUUID();
@@ -35,7 +39,7 @@ class InternalAchievementControllerTest {
     void setUp() {
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         mockMvc = MockMvcBuilders
-                .standaloneSetup(new InternalAchievementController(achievementService))
+                .standaloneSetup(new InternalAchievementController(achievementService, achievementEvaluationService))
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
                 .build();
     }
