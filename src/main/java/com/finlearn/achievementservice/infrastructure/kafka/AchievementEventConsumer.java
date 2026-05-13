@@ -47,6 +47,7 @@ public class AchievementEventConsumer {
             achievementEvaluationService.evaluateAchievements(command);
         } catch (Exception e) {
             log.error("[Kafka] investment.changed 처리 실패: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -63,6 +64,7 @@ public class AchievementEventConsumer {
             achievementEvaluationService.syncUserNickname(event.getUserId(), event.getNickname());
         } catch (Exception e) {
             log.error("[Kafka] user.profile-updated 처리 실패: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }
