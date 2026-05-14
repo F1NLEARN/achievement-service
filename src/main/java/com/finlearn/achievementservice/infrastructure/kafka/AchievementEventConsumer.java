@@ -45,6 +45,8 @@ public class AchievementEventConsumer {
                     .userProfileImage(event.getUserProfileImage())
                     .build();
             achievementEvaluationService.evaluateAchievements(command);
+        } catch (IllegalArgumentException e) {
+            log.error("[Kafka] investment.changed 역직렬화 실패: {}", e.getMessage(), e);
         } catch (Exception e) {
             log.error("[Kafka] investment.changed 처리 실패: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
@@ -62,6 +64,8 @@ public class AchievementEventConsumer {
         try {
             UserProfileUpdatedEvent event = objectMapper.convertValue(payload, UserProfileUpdatedEvent.class);
             achievementEvaluationService.syncUserNickname(event.getUserId(), event.getNickname());
+        } catch (IllegalArgumentException e) {
+            log.error("[Kafka] user.profile-updated 역직렬화 실패: {}", e.getMessage(), e);
         } catch (Exception e) {
             log.error("[Kafka] user.profile-updated 처리 실패: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);

@@ -1,6 +1,7 @@
 package com.finlearn.achievementservice.infrastructure.persistence;
 
 import com.finlearn.achievementservice.domain.UserAchievement;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,7 @@ public interface UserAchievementJpaRepository extends JpaRepository<UserAchievem
     List<UserAchievement> findAllByUserId(UUID userId);
 
     // 이미 달성한 업적 ID 목록 조회
+    @EntityGraph(attributePaths = "achievement")
     List<UserAchievement> findAllByUserIdAndSeasonIdAndAchievementAchievementIdIn(
             UUID userId, UUID seasonId, List<UUID> achievementIds);
 
