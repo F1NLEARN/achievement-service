@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * 업적 도메인 이벤트 Kafka 수신
  * 수신한 이벤트를 Application Command로 변환 후 AchievementEvaluationService에 전달
@@ -30,7 +32,7 @@ public class AchievementEventConsumer {
             topics = "${kafka.topics.investment.changed}",
             groupId = "${spring.kafka.consumer.group-id}"
     )
-    public void handleInvestmentChanged(Object payload) {
+    public void handleInvestmentChanged(Map<String, Object> payload) {
         try {
             InvestmentChangedEvent event = objectMapper.convertValue(payload, InvestmentChangedEvent.class);
             EvaluateAchievementsCommand command = EvaluateAchievementsCommand.builder()
@@ -60,7 +62,7 @@ public class AchievementEventConsumer {
             topics = "${kafka.topics.user.updated}",
             groupId = "${spring.kafka.consumer.group-id}"
     )
-    public void handleUserProfileUpdated(Object payload) {
+    public void handleUserProfileUpdated(Map<String, Object> payload) {
         try {
             UserProfileUpdatedEvent event = objectMapper.convertValue(payload, UserProfileUpdatedEvent.class);
             achievementEvaluationService.syncUserNickname(event.getUserId(), event.getNickname());
